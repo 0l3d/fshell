@@ -41,26 +41,6 @@ initShell command = do
                     ExitSuccess   -> return ()
                     ExitFailure _ -> putStrLn "Command fail."
 
-
-{-
-0   - default
-30  - black
-31  - red
-32  - green
-33  - yellow
-34  - blue
-35  - magenta
-36  - cyan
-37  - white
-90  - bright black (gray)
-91  - bright red
-92  - bright green
-93  - bright yellow
-94  - bright blue
-95  - bright magenta
-96  - bright cyan
-97  - bright white
--}
 textCol :: String -> String -> IO ()
 textCol code name = putStr $ "\ESC[" ++ code ++ "m" ++ name ++ "\ESC[0m"
 inColor :: String -> String -> IO String
@@ -82,6 +62,26 @@ shellText = do
   hFlush stdout
 
 
+-- COLOR CODES
+{-
+0   - default
+30  - black
+31  - red
+32  - green
+33  - yellow
+34  - blue
+35  - magenta
+36  - cyan
+37  - white
+90  - bright black (gray)
+91  - bright red
+92  - bright green
+93  - bright yellow
+94  - bright blue
+95  - bright magenta
+96  - bright cyan
+97  - bright white
+-}
 
 -- TODO : Create a configuration file.
 -- TODO : Colorize output.
