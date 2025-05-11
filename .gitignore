@@ -1,0 +1,6 @@
+# Ignore Haskell build artifacts
+dist-newstyle/
+*.hi
+*.o
+*.ghc
+

@@ -32,7 +32,7 @@ initShell command = do
         result <- try (createProcess processSpec) :: IO (Either SomeException (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle))
         case result of
             Left err -> do
-                putStrLn $ "Hata: " ++ show err
+                putStrLn $ "Error" ++ show err
                 return ()
             Right (_, _, _, pid) -> do
                 exitCode <- waitForProcess pid
