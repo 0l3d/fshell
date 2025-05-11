@@ -3,22 +3,26 @@ module Main where
 
 import qualified Shell (initShell, shellText)
 import System.IO ()
-import Control.Monad (when, forever)
+import Control.Monad (forever)
+import System.Console.Haskeline
+    ( defaultSettings, getInputLine, runInputT, InputT )
 import System.Posix.Signals
     ( installHandler, Handler(Catch), sigINT)
+import Control.Monad.IO.Class (MonadIO(liftIO))
 
-shellLoop :: IO ()
+shellLoop :: InputT IO ()
 shellLoop = forever $ do
-  Shell.shellText
-  command <- getLine
+  liftIO Shell.shellText
+  command <- getInputLine ""
+  case command of
+    Nothing -> return()
+    Just comm -> do
+      liftIO $ Shell.initShell comm
   let interrupt = do
        putStrLn "^C (you cant turn off me!!!)"
-  installHandler sigINT (Catch interrupt) Nothing
-  if command == "" then
-    shellLoop
-  else do
-    Shell.initShell command
+  liftIO $ installHandler sigINT (Catch interrupt) Nothing
+
 
 main :: IO ()
 main = do
-  shellLoop
+  runInputT defaultSettings shellLoop

@@ -10,9 +10,14 @@ import System.Process
       waitForProcess,
       CreateProcess(std_err, std_in, std_out),
       StdStream(CreatePipe, Inherit), ProcessHandle )
-import System.IO ( stdout, hFlush, hGetContents, Handle )
-import Control.Exception ( SomeException, try )
+import System.IO ( stdout, hFlush, Handle )
+import Control.Exception ( SomeException, try, catch, IOException )
 import System.Console.ANSI ()
+
+
+isDoesNotEx :: IOException ->  IO ()
+isDoesNotEx e = do
+  putStrLn "No such file or directory."
 
 -- Shell initialize.
 initShell :: String -> IO ()
@@ -22,18 +27,17 @@ initShell command = do
       exitSuccess
     else if take 2 command == "cd" then do
         let dir = drop 3 command
-        setCurrentDirectory dir
+        setCurrentDirectory dir `catch` isDoesNotEx
     else do
         let args = words command
         let cmd = head args
         let cmdArgs = tail args
-
         let processSpec = (proc cmd cmdArgs) { std_out = Inherit, std_err = Inherit, std_in = Inherit }
-
         result <- try (createProcess processSpec) :: IO (Either SomeException (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle))
         case result of
             Left err -> do
-                putStrLn $ "Error: " ++ show err
+                textCol "31" $ "Error: " ++ show err
+                putStrLn ""
                 return ()
             Right (_, _, _, pid) -> do
                 exitCode <- waitForProcess pid
@@ -41,6 +45,8 @@ initShell command = do
                     ExitSuccess   -> return ()
                     ExitFailure _ -> putStrLn "Command fail."
 
+
+-- COLOR
 textCol :: String -> String -> IO ()
 textCol code name = putStr $ "\ESC[" ++ code ++ "m" ++ name ++ "\ESC[0m"
 inColor :: String -> String -> IO String
