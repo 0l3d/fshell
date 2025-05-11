@@ -1,7 +1,7 @@
 module Main where
 
 import qualified Shell (initShell, shellText)
-import System.IO
+import System.IO ()
 import Control.Monad (when)
 
 shellLoop :: IO ()
@@ -17,4 +17,3 @@ shellLoop = do
 main :: IO ()
 main = do
   shellLoop
-  putStrLn "Bye"
