@@ -45,7 +45,6 @@ initShell command = do
         let args = stringTokenizer command
         let cmd = head args
         let cmdArgs = tail args
-        print cmdArgs
         let processSpec = (proc cmd cmdArgs) { std_out = Inherit, std_err = Inherit, std_in = Inherit }
         result <- try (createProcess processSpec) :: IO (Either SomeException (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle))
         case result of
