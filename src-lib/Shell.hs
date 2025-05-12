@@ -25,7 +25,7 @@ stringTokenizer = go False "" []
   where
     go _ acc res [] = reverse (if null acc then res else reverse acc : res)
     go inQuote acc res (x:xs)
-      | x == '"'  = go (not inQuote) (x : acc) res xs
+      | x == '"'  = go (not inQuote) acc res xs
       | isSpace x && not inQuote =
           if null acc then go inQuote "" res xs
                       else go inQuote "" (reverse acc : res) xs
