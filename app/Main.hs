@@ -15,7 +15,7 @@ shellLoop = forever $ do
   liftIO Shell.shellText
   command <- getInputLine ""
   case command of
-    Nothing -> return()
+    Nothing -> shellLoop
     Just comm -> do
       liftIO $ Shell.initShell comm
   let interrupt = do

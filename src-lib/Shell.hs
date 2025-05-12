@@ -13,11 +13,24 @@ import System.Process
 import System.IO ( stdout, hFlush, Handle )
 import Control.Exception ( SomeException, try, catch, IOException )
 import System.Console.ANSI ()
+import Data.Char ( isSpace )
 
 
 isDoesNotEx :: IOException ->  IO ()
 isDoesNotEx e = do
   putStrLn "No such file or directory."
+
+stringTokenizer :: String -> [String]
+stringTokenizer = go False "" []
+  where
+    go _ acc res [] = reverse (if null acc then res else reverse acc : res)
+    go inQuote acc res (x:xs)
+      | x == '"'  = go (not inQuote) (x : acc) res xs
+      | isSpace x && not inQuote =
+          if null acc then go inQuote "" res xs
+                      else go inQuote "" (reverse acc : res) xs
+      | otherwise = go inQuote (x : acc) res xs
+
 
 -- Shell initialize.
 initShell :: String -> IO ()
@@ -29,9 +42,10 @@ initShell command = do
         let dir = drop 3 command
         setCurrentDirectory dir `catch` isDoesNotEx
     else do
-        let args = words command
+        let args = stringTokenizer command
         let cmd = head args
         let cmdArgs = tail args
+        print cmdArgs
         let processSpec = (proc cmd cmdArgs) { std_out = Inherit, std_err = Inherit, std_in = Inherit }
         result <- try (createProcess processSpec) :: IO (Either SomeException (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle))
         case result of
